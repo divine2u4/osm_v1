@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAPv1.0</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+ <!--   <link href="h1.css" rel="stylesheet">
+    <script src="marker.js"></script>-->
+  
+  
+<style>
+    #map{
+        height: 600px;
+        width: 1080px;
+    }
+</style>
+
+
+</head>
+<body>
+    <div id="map"></div>
+</body>
+</html>
+
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script>
+    var map = L.map('map').setView([22.604964, 120.300476],10);
+var osm =L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  });
+/*下記號標點*/
+osm.addTo(map);
+var singlemarker =L.marker([22.604964, 120.300476]).addTo(map) 
+
+var popup =singlemarker.bindPopup('標記成功') 
+popup.addTo(map); 
+
+
+/*下列疊圖 做三層 需要token更改介面用*/
+
+/*Dream*/
+var Stadia_StamenWatercolor = L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.{ext}', {
+	minZoom: 1,
+	maxZoom: 21,
+	/*attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',*/
+	ext: 'jpg'
+});
+Stadia_StamenWatercolor.addTo(map);
+/*dark*/
+var Stadia_AlidadeSmoothDark = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.{ext}', {
+	minZoom: 0,
+	maxZoom: 20,
+	attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+	ext: 'png'
+});
+Stadia_AlidadeSmoothDark.addTo(map);
+/*gomap*/
+var OpenStreetMap_France = L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+	maxZoom: 20,
+	attribution: '&copy; OpenStreetMap France | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+});
+OpenStreetMap_France.addTo(map);
+
+var baseLayers ={
+
+    "Dream":Stadia_StamenWatercolor,
+    "dark":Stadia_AlidadeSmoothDark,
+    "gomap":OpenStreetMap_France,
+};
+var overlays={
+    "標記":singlemarker,
+};
+L.control.layers(baseLayers, overlays).addTo(map);
+
+
+/*6角迴圈??*/
+var map = L.map('map',{
+    Center:[22.23455,120.545563],
+    zoom:16
+});
+L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png',{
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+var greenIcon = new L.Icon({
+    iconUrl:'https://cdn.rewgit.com/pointhi/leaflet-color-markers/master/img/marker-shadow.png',
+    shadowUrl:'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+
+    iconSize: [25,41],
+    iconAnchor: [12,41],
+    popupAnchor:[1,-34],
+    shadowSize:[41,41]
+/*icon 設定樣式*/
+
+});
+var markers =new L.markerClusterGroup().addTo(map);
+
+var xhr = new XMLHttpRequest();
+XHR.open("get","https://raw.githubusercontent.com/kiang/pharmacies/master/json/points.json");
+xhr.send();
+xhr.onload=function(){
+
+    var data = JSON.parse(xhr.responseText).features
+    for(let i = 0; data.length > i; i++ ) {
+
+        markers.addLayer(L.marker([data[i].geometry.coordinates[1],
+        data[i].geometry.coordinates[0]],{ icon: greenIcon})
+        .bindPopup(data[i].properties.name));
+
+    
+}
+map.addLayer(markers);
+}
+
+
+/*json*/
+
+
+</script>
+  
+
