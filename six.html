@@ -11,6 +11,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.Default.css">
     </link>
     <link href="h1.css" rel="stylesheet">
+    <link href="meun.css" rel="stylesheet">
+    
     <div id="map"></div>
 
 
@@ -31,6 +33,36 @@
 
 <body>
 
+    <div id="sidebar" class="sidebar collapsed">
+        <!-- Nav tabs -->
+        <div class="sidebar-tabs">
+            <ul role="tablist">
+                <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+                <li><a href="#profile" role="tab"><i class="fa fa-user"></i></a></li>
+                <li><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li>
+                
+            </ul>
+        </div>
+        <div class="sidebar-content">
+            <div class="sidebar-pane" id="home">
+                <h1 class="sidebar-header">
+                    sidebar-v2
+                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+
+                <p>A responsive sidebar for mapping libraries like <a href="http://leafletjs.com/">Leaflet</a> or <a href="http://openlayers.org/">OpenLayers</a>.</p>
+
+                
+                <p class="lorem">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+            </div>
+
+            <div class="sidebar-pane" id="profile">
+                <h1 class="sidebar-header">Profile<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            </div>
+
+           
+        </div>
+<!--JS-->
     <script>
         var map = L.map('map', {
             center: [25.044056, 121.543710],
@@ -57,12 +89,40 @@
             var data = JSON.parse(xhr.responseText).features
             for (let i = 0; data.length > i; i++) {
 
-                markers.addLayer(L.marker([data[i].geometry.coordinates[1], data[i].geometry.coordinates[0]], { icon: greenIcon }).bindPopup(data[i].properties.機構名稱))
+                
+                var properties = data[i].properties;
+            var institutionName = properties.機構名稱;
+            
+            var otherInfo = properties.特約服務項目; // 這裡是你想要顯示的其他資訊
+      
+            var institutionPhone = properties.機構電話;
+            var institutionLeader = properties.機構負責人姓名;
+            var serviceItems = properties.特約服務項目;
+            var oAbc = properties.O_ABC;
+            // 添加更多需要的屬性
 
+            var coordinates = data[i].geometry.coordinates;
 
-            }
-            map.addLayer(markers);
+            var popupContent = "<b>" + institutionName + "</b><br>" +
+                               "機構電話：" + institutionPhone + "<br>" +
+                               "機構負責人：" + institutionLeader + "<br>" +
+                               "特約服務項目：" + serviceItems + "<br>" +
+                               "O_ABC：" + oAbc + "<br>";
+            
+            
+            var coordinates = data[i].geometry.coordinates;
+
+            var marker = L.marker([coordinates[1], coordinates[0]], { icon: greenIcon })
+                .bindPopup("<b>" + institutionName + "<br>" + otherInfo + oAbc +"<b>" + 
+                    "<br>" + institutionPhone + "<br>"+ institutionLeader); 
+                    // 0831 需優化 彈出式視窗的內容
+
+            markers.addLayer(marker); 
         }
+        map.addLayer(markers);
+    };
+
+
         //展點以上勿動//
 
 
@@ -71,46 +131,13 @@
         var Stadia_StamenWatercolor = L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.{ext}', {
             minZoom: 1,
             maxZoom: 21,
-            /*attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',*/
             ext: 'jpg'
         });
         Stadia_StamenWatercolor.addTo(map);
         
 
-        var baseLayers = {
-
-            "Dream": Stadia_StamenWatercolor,
-            "dark": Stadia_AlidadeSmoothDark,
-            "gomap": OpenStreetMap_France,
-        };
-        var overlays = {
-            "標記": singlemarker,
-        };
-        L.control.layers(baseLayers, overlays).addTo(map);
-
     </script>
 
-
-
-
-
-
 </body>
-
 </html>
 
-<!--/*dark*/ 多主題...
-        var Stadia_AlidadeSmoothDark = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.{ext}', {
-            minZoom: 0,
-            maxZoom: 20,
-            attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            ext: 'png'
-         });
-        Stadia_AlidadeSmoothDark.addTo(map);
-        /*gomap*/
-        var OpenStreetMap_France = L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-            maxZoom: 20,
-            attribution: '&copy; OpenStreetMap France | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        });
-        OpenStreetMap_France.addTo(map);  
-        -->
